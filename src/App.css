@@ -18,3 +18,9 @@ body{
 .nav li a.active{
   color: red;
 }
+
+#map{
+  height: 400px;
+  width: 400px;
+  background-color: #eee;
+}

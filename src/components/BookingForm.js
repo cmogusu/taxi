@@ -6,7 +6,7 @@ import Vehicles from './Vehicles.js';
 import DateTime from './DateTime.js';
 
 class BookingForm extends React.Component {
-  placesLocation = {
+  state = {
     origin: null,
     destination: null,
     via: null,
@@ -19,17 +19,16 @@ class BookingForm extends React.Component {
       return;
     }
 
-    this.places[place] = placesData.geometry.location;
-
-    this.sendRequest();
+    this.setState({
+      [place]: placesData.geometry.location,
+    });
   };
-
-  calculateDistance() {
-    this.sendRequest();
-  }
 
 
   render() {
+    const { origin, destination, via } = this.state;
+    console.log('origin, destination, via ', origin, destination, via);
+
     return (
       <div className="row">
         <div className="col-sm-6">
@@ -67,7 +66,7 @@ class BookingForm extends React.Component {
           </form>
         </div>
         <div className="col-sm-6">
-          <Map />
+          <Map origin={origin} destination={destination} via={via} />
           <Vehicles />
         </div>
       </div>

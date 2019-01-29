@@ -1,46 +1,12 @@
-import React from 'react';
-
-export function withGoogle(Component) {
-  return class extends React.Component {
-    state = {
-      google: null,
-    }
-
-    componentDidMount() {
-      if (window.tomtom) {
-        this.init();
-      } else {
-        window.addEventListener('googleReady', this.init);
-      }
-    }
-
-    componentWillUnmount() {
-      window.removeEventListener('googleReady', this.init);
-    }
-
-    init = () => {
-      setTimeout(() => {
-        const { google } = window;
-
-        this.setState({ google });
-      }, 100);
-    }
-
-    render() {
-      const { google } = this.state;
-      return <Component google={google} {...this.props} />;
-    }
-  };
-}
-
-export const loadScript = (script) => {
+// @flow
+export const loadScript = (script: string): void => {
   const theScript = document.createElement('script');
   theScript.setAttribute('src', script);
   document.head.appendChild(theScript);
 };
 
 
-export const createMapsReadyEvent = (eventName) => {
+export const createMapsReadyEvent = (eventName: string): void => {
   const triggerEvent = () => {
     const mapsReadyEvent = new Event(eventName);
     window.dispatchEvent(mapsReadyEvent);
@@ -55,7 +21,24 @@ export const createMapsReadyEvent = (eventName) => {
   }
 };
 
-export function loadGoogle() {
+export function loadGoogle(): void {
   loadScript('https://maps.googleapis.com/maps/api/js?key=AIzaSyBGraz0piF8xyoi2zAdb8xKTooF_8wqunc&callback=initMap&libraries=places');
   createMapsReadyEvent('googleReady');
+}
+
+
+export function metersToMiles(distanceInMeters: number): number {
+  if (distanceInMeters === 0) {
+    return 0;
+  }
+
+  return Math.round(distanceInMeters / 160.9344) / 10;
+}
+
+export function distanceToPrice(distanceInMeters: number, costPerMile: number): number {
+  if (distanceInMeters === 0 || costPerMile === 0) {
+    return 0;
+  }
+
+  return Math.round(distanceInMeters / 16.09344 * costPerMile) / 100;
 }

@@ -1,64 +1,169 @@
+// @flow
 import * as React from 'react';
-import { isFunction } from 'lodash';
-import mapboxgl from 'mapbox-gl/dist/mapbox-gl.js';
-import apiKey from '../apiKey.js';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import withGoogle from '../functions/withGoogle.js';
+import { metersToMiles, distanceToPrice } from '../functions/functions.js';
 
 type Props = {
-  zoom?: number,
-  height?: number,
-  width?: number,
+  google: {},
+  origin?: {},
+  destination?: {},
+  via?: {},
 };
 
+type State = {
+  isLoading: boolean,
+  totalDistance: number,
+  totalDuration: number,
+}
 
-class Map extends React.Component<Props> {
+
+class Map extends React.Component<Props, State> {
   static defaultProps = {
-    zoom: 14,
-    height: 400,
-    width: 400,
+    origin: null,
+    destination: null,
+    via: null,
   };
+
+  state = {
+    isLoading: false,
+    totalDistance: 0,
+    totalDuration: 0,
+  }
+
+  mapElement = null;
 
   map = null;
 
-  element = null;
+  directionsService = null;
 
-  componentDidMount() {
-    mapboxgl.accessToken = apiKey;
-    this.map = new mapboxgl.Map({
-      container: this.element,
-      style: 'mapbox://styles/mapbox/streets-v11',
+  totalDuration = 0;
+
+  componentDidUpdate(prevProps) {
+    const {
+      google: prevGoogle,
+      origin: prevOrigin,
+      destination: prevDestination,
+      via: prevVia,
+    } = prevProps;
+
+    const {
+      google,
+      origin,
+      destination,
+      via,
+    } = this.props;
+
+    if (google && prevGoogle !== google) {
+      this.renderMap();
+    }
+
+    if (origin
+      && destination
+      && (origin !== prevOrigin || destination !== prevDestination || via !== prevVia )
+    ) {
+      this.displayRoute();
+    }
+  }
+
+
+  displayRoute = () => {
+    const {
+      origin,
+      destination,
+      via,
+      google,
+    } = this.props;
+    const { isLoading } = this.state;
+
+    if (isLoading || !origin || !destination || !google) {
+      return;
+    }
+
+    const routeInfo = {
+      origin,
+      destination,
+      travelMode: 'DRIVING',
+    };
+
+    if (via) {
+      routeInfo.waypoints = [{
+        location: via,
+        stopover: false,
+      }];
+    }
+
+    if (!this.directionsService) {
+      this.directionsService = new google.maps.DirectionsService();
+    }
+
+    this.directionsService.route(routeInfo, this.processResults);
+    // console.log(`would check google now for ${origin} ${destination} ${via}`);
+    this.setState({
+      isLoading: true,
+    });
+  };
+
+
+  processResults = (results, status) => {
+    if (status !== 'OK') {
+      console.log('unable to get directons');
+      return;
+    }
+
+    const totalDistance = results.routes.reduce((distance, route) => (
+      distance + route.legs.reduce((innerDistance, leg) => innerDistance + leg.distance.value)
+    ), 0);
+
+    console.log(results);
+
+    this.setState({
+      isLoading: false,
+      totalDistance,
+    });
+  };
+
+
+  renderMap() {
+    const { google } = this.props;
+
+    if (!google) {
+      return;
+    }
+
+    const zoom = 15;
+    this.map = new google.maps.Map(this.mapElement, {
+      zoom,
+      center: {
+        lat: 52.639625,
+        lng: -1.135978,
+      },
     });
   }
 
-  setZoom = (zoom) => {
-    console.log(`zoom is set ${zoom}`);
-  }
-
-  setCenter = (center) => {
-console.log(center);
-    //this.map
-  }
 
   render() {
-    const { height, width, children } = this.props;
+    const { totalDistance, totalDuration } = this.state;
 
     return (
       <div>
-        {isFunction(children) && this.map
-          ? children({
-            setZoom: this.setZoom,
-            setCenter: this.setCenter,
-          }) : null
-        }
-
-        <div
-          id="map"
-          ref={(element) => { this.element = element; }}
-          style={{ height: `${height}px`, width: `${width}px` }}
-        />
+        <div id="map" ref={(element) => { this.mapElement = element; }} />
+        <div>
+          <span>
+            {metersToMiles(totalDistance)}
+            miles
+          </span>
+          <span>
+            {totalDuration}
+            mins
+          </span>
+          <span>
+            {distanceToPrice(totalDuration)}
+            mins
+          </span>
+        </div>
       </div>
     );
   }
 }
 
-export default Map;
+export default withGoogle(Map);
