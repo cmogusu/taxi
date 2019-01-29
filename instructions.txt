@@ -1,0 +1,53 @@
+The following fields must be present in the quote engine at the front end of the website.
+
+Pickup
+Destination (option to swap pickup and destination)
+Via (restrict this to 1 Via)
+Date
+Time (in hours and minutes)
+Return Date & Time
+Passengers
+Luggage
+(display journey time which will be provided by google maps api anyway)
+
+Please www.bourneendtaxi.co.uk to see the examples of a front end quote engine.
+
+You can place a test booking on this site using the pickup and destination address of 
+
+Type Sl8 5sb  in pickup and select any address from the list 
+
+Type hp10 0he in destination and pick any address from the list
+
+Use your own email address
+Use mobile no 07970586381
+
+Any future date and time
+
+Don’t put test or anything like that in any of the fields so the company does not get suspicious.
+
+Use your own name
+
+
+
+Booking Screen Fields
+
+The following fields or options must be in the booking scree.
+
+The facility to login or create an account
+Booking Type
+    • Personal
+    • Business
+    • On Behalf
+All boking details from the quote engine should be auto filled (pickup destination bags passengers)
+Customer First Name
+Customer Last Name
+Email 
+Telephone
+Baggage Details 
+Notes
+Voucher Code
+Payment Option
+    • Credit Card
+    • Paypal
+    • Cash
+Flight Number 

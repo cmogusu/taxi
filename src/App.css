@@ -1,0 +1,20 @@
+body{
+  background: #eee;
+}
+.autocomplete{
+  border: 1px solid #ddd;
+  padding: 10px;
+  background: #fff;
+}
+
+.nav li{
+  display:inline-block;
+}
+
+.nav li a{
+  padding: 10px 20px 10px 0;
+}
+
+.nav li a.active{
+  color: red;
+}
