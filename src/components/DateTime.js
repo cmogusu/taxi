@@ -6,20 +6,25 @@ import { MuiPickersUtilsProvider, DateTimePicker } from 'material-ui-pickers';
 
 type Props = {
   onChange: Function,
+  label: string,
+  minDate: {},
   date: {},
 };
 
 
 function DateTime(props: Props) {
-  const { onChange, date } = props;
+  const { onChange, date, label, minDate } = props;
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <DateTimePicker
         margin="normal"
-        label="Time picker"
+        label={label}
         value={date}
         onChange={onChange}
+        minDate={minDate}
+        disablePast
+        clearable
       />
     </MuiPickersUtilsProvider>
   );

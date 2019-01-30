@@ -14,7 +14,7 @@ function Checkbox(props: Props) {
 
   return (
     <FormControlLabel
-      control={<Switch checked={isChecked} onChange={onChange} value={label} />}
+      control={<Switch color="primary" checked={isChecked} onChange={onChange} value={label} />}
       label={label}
     />
   );

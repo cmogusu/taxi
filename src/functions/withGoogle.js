@@ -7,7 +7,7 @@ function withGoogle(Component) {
     }
 
     componentDidMount() {
-      if (window.tomtom) {
+      if (window.google) {
         this.init();
       } else {
         window.addEventListener('googleReady', this.init);

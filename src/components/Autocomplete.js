@@ -27,9 +27,11 @@ class AutocompleteInput extends React.Component<Props> {
 
   element = null;
 
+
   componentDidUpdate() {
     this.renderAutocomplete();
   }
+
 
   listen() {
     const { setPlace } = this.props;
@@ -48,17 +50,15 @@ class AutocompleteInput extends React.Component<Props> {
   renderAutocomplete() {
     const { google } = this.props;
 
-    if (!google) {
+    if (this.autocomplete || !google) {
       return;
     }
 
-    if (!this.autocomplete) {
-      this.autocomplete = new google.maps.places.Autocomplete(this.element, {
-        componentRestrictions: {
-          country: ['uk'],
-        },
-      });
-    }
+    this.autocomplete = new google.maps.places.Autocomplete(this.element, {
+      componentRestrictions: {
+        country: ['uk'],
+      },
+    });
 
     this.autocomplete.setFields(['geometry', 'formatted_address']);
     this.listen();
