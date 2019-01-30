@@ -74,6 +74,7 @@ class AutocompleteInput extends React.Component<Props> {
         inputRef={(element) => { this.element = element; }}
         type="text"
         label={label}
+        fullWidth={true}
       />
     );
   }

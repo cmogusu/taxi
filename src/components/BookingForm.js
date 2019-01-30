@@ -2,6 +2,7 @@ import React from 'react';
 import { isError } from 'lodash';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
+import Slider from '@material-ui/lab/Slider'
 import { addMinutes, isBefore } from 'date-fns';
 
 import Autocomplete from './Autocomplete.js';
@@ -9,7 +10,6 @@ import Map from './Map.js';
 import Vehicles from './Vehicles.js';
 import DateTime from './DateTime.js';
 import Checkbox from './Checkbox.js';
-import Slider from './Slider.js';
 
 
 class BookingForm extends React.Component {
@@ -25,6 +25,8 @@ class BookingForm extends React.Component {
     dateError: '',
     isReturnJourney: false,
     passengers: 1,
+    totalDistance: 0,
+    totalDuration: 0,
   };
 
   constructor(props) {
@@ -40,6 +42,7 @@ class BookingForm extends React.Component {
     const { waypoints } = this.state;
     const { geometry } = placesData;
     let { location } = geometry;
+    console.log({ lat: location.lat(), lng: location.lng() });
 
     if (place === 'waypoints') {
       const newWaypoints = waypoints.slice();
@@ -113,8 +116,9 @@ class BookingForm extends React.Component {
       dateError,
       isReturnJourney,
       passengers,
+      totalDistance,
+      totalDuration
     } = this.state;
-
 
     return (
       <div className="row">
@@ -123,73 +127,94 @@ class BookingForm extends React.Component {
             <h1>Book in under a minute</h1>
             <p>Airport transfers, taxis and executive cars</p>
           </header>
-          <div>
-            <Autocomplete label="Pick up" setPlace={places => this.setPlace(places, 'origin')} />
-            <Autocomplete label="Destination" setPlace={places => this.setPlace(places, 'destination')} />
-            <br />
+          <div className="text-center">
+            <div className="mb-3">
+              <Autocomplete label="Pick up" setPlace={places => this.setPlace(places, 'origin')} />
+              <Autocomplete label="Destination" setPlace={places => this.setPlace(places, 'destination')} />
+            </div>
 
-            <Fab
-              size="small"
-              color="primary"
-              variant="extended"
-              aria-label="add via location"
-              onClick={this.addWaypoint}
-            >
-              Add Via
-            </Fab>
-            <br />
+            <div>
+              <Fab
+                size="small"
+                color="primary"
+                variant="extended"
+                aria-label="add via location"
+                onClick={this.addWaypoint}
+              >
+                Add Via
+              </Fab>
+              <br />
 
-            {waypoints.map((waypoint, index) => (
-              <Autocomplete
-                key={index}
-                label={`Via ${index + 1}`}
-                setPlace={places => this.setPlace(places, 'waypoints', index)}
+              {waypoints.map((waypoint, index) => (
+                <Autocomplete
+                  key={index}
+                  label={`Via ${index + 1}`}
+                  setPlace={places => this.setPlace(places, 'waypoints', index)}
+                />
+              ))}
+
+              <DateTime
+                date={date}
+                label={dateError || 'Departure time'}
+                onChange={this.setDateTime}
+                minDate={addMinutes(new Date(), this.dateDelay)}
               />
-            ))}
+            </div>
 
-            <DateTime
-              date={date}
-              label={dateError || 'Departure time'}
-              onChange={this.setDateTime}
-              minDate={addMinutes(new Date(), this.dateDelay)}
-            />
-            <br />
+            <div>
+              <Checkbox
+                label="Return Journey"
+                isChecked={isReturnJourney}
+                onChange={event => this.setState({ isReturnJourney: event.currentTarget.checked })}
+              />
+            </div>
 
+            <div className="mb-3">
+              <span>
+                Passengers:&nbsp;
+                {passengers}
+              </span>
+              <Slider
+                value={passengers}
+                min={0}
+                max={10}
+                step={1}
+                onChange={(event, value) => this.setState({ passengers: value })}
+              />
+            </div>
 
-            <Checkbox
-              label="Return Journey"
-              isChecked={isReturnJourney}
-              onChange={event => this.setState({ isReturnJourney: event.currentTarget.checked })}
-            />
-            <br />
-
-            <span>Passengers</span>
-            <br />
-            <Slider
-              value={passengers}
-              onChange={(event, value) => this.setState({ passengers: value })}
-            />
-            <br />
-
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={this.getQuote}
-              disabled={!(origin && destination)}
-            >
-              Get Quotes
-            </Button>
-            <Button
-              onClick={() => this.setState(this.defaultState)}
-              disabled={!(origin && destination)}
-            >
-              Reset
-            </Button>
+            <div>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={this.getQuote}
+                disabled={!(origin && destination && !dateError)}
+              >
+                Get Quotes
+              </Button>
+              <Button
+                onClick={() => this.setState(this.defaultState)}
+                disabled={!(origin && destination && !dateError)}
+              >
+                Reset
+              </Button>
+            </div>
           </div>
         </div>
         { hasSubmited && (
           <div className="col-sm-6">
-            <Map origin={origin} destination={destination} waypoints={waypoints} />
+            <Map
+              {...{
+                origin,
+                destination,
+                waypoints,
+                totalDuration,
+                totalDistance,
+              }}
+
+              setDuration={duration => this.setState({ totalDuration: duration })}
+              setDistance={distance => this.setState({ totalDistance: distance })}
+            />
             <Vehicles />
           </div>
         )}

@@ -3,10 +3,16 @@ import React from 'react';
 function withGoogle(Component) {
   return class extends React.Component {
     state = {
-      google: null,
+      google: window.google,
     }
 
     componentDidMount() {
+      const { google } = this.state;
+
+      if (google) {
+        return;
+      }
+
       if (window.google) {
         this.init();
       } else {

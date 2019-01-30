@@ -1,34 +1,31 @@
 // @flow
 import * as React from 'react';
+import { throttle, isEqual } from 'lodash';
 import withGoogle from '../functions/withGoogle.js';
 import { metersToMiles, distanceToPrice, secondsToMinutes } from '../functions/functions.js';
 
 type Props = {
   google: {},
-  origin?: {},
-  destination?: {},
-  via?: {},
+  origin: {},
+  destination: {},
+  waypoints: Array<{}>,
+  totalDistance: number,
+  totalDuration: number,
+  setDuration: Function,
+  setDistance: Function,
 };
 
 type State = {
-  isLoading: boolean,
-  totalDistance: number,
-  totalDuration: number,
+  hasFetchedDirectionsBefore: boolean,
 }
 
 
 class Map extends React.Component<Props, State> {
-  static defaultProps = {
-    origin: null,
-    destination: null,
-    via: null,
+  state = {
+    hasFetchedDirectionsBefore: false,
   };
 
-  state = {
-    isLoading: false,
-    totalDistance: 0,
-    totalDuration: 0,
-  }
+  hasFetchedDirectionsBefore = false;
 
   mapElement = null;
 
@@ -40,44 +37,58 @@ class Map extends React.Component<Props, State> {
 
   totalDuration = 0;
 
+  constructor(props) {
+    super(props);
+
+    this.sendGMapsRequest = throttle(this.sendGMapsRequest, 200);
+  }
+
+  componentDidMount() {
+    this.renderMap();
+    this.sendGMapsRequest();
+  }
+
   componentDidUpdate(prevProps) {
     const {
-      google: prevGoogle,
       origin: prevOrigin,
       destination: prevDestination,
-      via: prevVia,
+      waypoints: prevWaypoints,
     } = prevProps;
 
     const {
       google,
       origin,
       destination,
-      via,
+      waypoints,
     } = this.props;
 
-    if (google && prevGoogle !== google) {
+    if (google && !this.map) {
       this.renderMap();
     }
 
-    if (origin
-      && destination
-      && (origin !== prevOrigin || destination !== prevDestination || via !== prevVia)
+    if (!this.hasFetchedDirectionsBefore) {
+      this.hasFetchedDirectionsBefore = true;
+      this.sendGMapsRequest();
+    }
+
+    if (!isEqual(origin, prevOrigin)
+      || !isEqual(destination, prevDestination)
+      || !isEqual(waypoints, prevWaypoints)
     ) {
-      this.displayRoute();
+      this.sendGMapsRequest();
     }
   }
 
 
-  displayRoute = () => {
+  sendGMapsRequest = () => {
     const {
       origin,
       destination,
-      via,
+      waypoints,
       google,
     } = this.props;
-    const { isLoading } = this.state;
 
-    if (isLoading || !origin || !destination || !google) {
+    if (!origin || !destination || !google) {
       return;
     }
 
@@ -87,27 +98,24 @@ class Map extends React.Component<Props, State> {
       travelMode: 'DRIVING',
     };
 
-    if (via) {
-      routeInfo.waypoints = [{
-        location: via,
+    if (waypoints) {
+      routeInfo.waypoints = waypoints.map(waypoint => ({
+        location: waypoint,
         stopover: false,
-      }];
+      }));
     }
 
     if (!this.directionsService) {
       this.directionsService = new google.maps.DirectionsService();
     }
+    console.log('running again', routeInfo);
 
     this.directionsService.route(routeInfo, this.processResults);
-
-    this.setState({
-      isLoading: true,
-    });
   };
 
 
   processResults = (results, status) => {
-    const { google } = this.props;
+    const { google, setDuration, setDistance } = this.props;
 
     if (status !== 'OK') {
       console.log('unable to get directons');
@@ -128,16 +136,12 @@ class Map extends React.Component<Props, State> {
         draggable: false,
         map: this.map,
       });
-
-      this.directionsRenderer.setDirections(results);
     }
-    console.log(results);
 
-    this.setState({
-      isLoading: false,
-      totalDistance,
-      totalDuration,
-    });
+    this.directionsRenderer.setDirections(results);
+
+    setDistance(totalDistance);
+    setDuration(totalDuration);
   };
 
 
@@ -160,23 +164,25 @@ class Map extends React.Component<Props, State> {
 
 
   render() {
-    const { totalDistance, totalDuration } = this.state;
+    const { totalDistance, totalDuration } = this.props;
 
     return (
       <div>
         <div id="map" ref={(element) => { this.mapElement = element; }} />
         <div>
           <span>
+            Distance:&nbsp;
             {metersToMiles(totalDistance)}
             miles
           </span>
           <span>
+            Duration:&nbsp;
             {secondsToMinutes(totalDuration)}
             mins
           </span>
           <span>
+            cost: $
             {distanceToPrice(totalDuration, 2.5)}
-            mins
           </span>
         </div>
       </div>
