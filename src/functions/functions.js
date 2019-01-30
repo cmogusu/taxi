@@ -42,3 +42,7 @@ export function distanceToPrice(distanceInMeters: number, costPerMile: number): 
 
   return Math.round(distanceInMeters / 16.09344 * costPerMile) / 100;
 }
+
+export function secondsToMinutes(timeInSeconds): number {
+  return timeInSeconds / 60;
+}

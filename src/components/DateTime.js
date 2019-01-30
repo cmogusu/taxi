@@ -1,21 +1,28 @@
+import 'date-fns';
 import React from 'react';
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, DateTimePicker } from 'material-ui-pickers';
 
 
-type Props = {};
+type Props = {
+  onChange: Function,
+  date: {},
+};
 
-class DateTime extends React.Component<Props> {
-  onChange = () => {
-    console.log('hello there');
-  }
 
-  render() {
-    return (
-      <React.Fragment>
-        <input type="date" onChange={this.onChange} placeholder="write date" />
-        <input type="time" onChange={this.onChange} placeholder="write time" />
-      </React.Fragment>
-    );
-  }
+function DateTime(props: Props) {
+  const { onChange, date } = props;
+
+  return (
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <DateTimePicker
+        margin="normal"
+        label="Time picker"
+        value={date}
+        onChange={onChange}
+      />
+    </MuiPickersUtilsProvider>
+  );
 }
 
 

@@ -877,17 +877,17 @@
   resolved "https://registry.yarnpkg.com/@csstools/convert-colors/-/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
   integrity sha512-5a6wqoJV/xEdbRNKVo6I4hO3VjyDq//8q2f9I6PBAvMesJHFauXDorcNCsr9RzvsZnaWi5NYCcfyqP1QeFHFbw==
 
-"@date-io/core@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@date-io/core/-/core-1.0.1.tgz#70624c535f2a53bf7ecefb486fc86e3edecf0078"
-  integrity sha512-vUdpOjCyjjDXjooyy+1MGCbw2BI00M/avAk+S8hQVs8CrLW78w7HdPFfVVpywC5f1ygueGc6IkSBVj0yawYGEg==
+"@date-io/core@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@date-io/core/-/core-1.0.2.tgz#05d506572e0811f9b114b043f9ac0c6e7525f022"
+  integrity sha512-zhZczfCD/wapSzMhmbsFP4VrLauInavmLSPG1Y/XuGVF3+nuNuH3WtQ+ibsz0/+OgiJAm934OhmuBW1OPxUI5w==
 
-"@date-io/date-fns@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@date-io/date-fns/-/date-fns-1.0.1.tgz#2e775fd1184bfb14993601aaef68a153ff21ceeb"
-  integrity sha512-egGn37+ReN1OhxfwiwngOiddalzauENg7Lf53EbcxlYYw8SRgxmvS5zxdG07AlDrPLCQg5tGqpqLyj3o3nsj0A==
+"@date-io/date-fns@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@date-io/date-fns/-/date-fns-1.0.2.tgz#7a03b23ea9144a9bec5a60f83eaae408d2701ab2"
+  integrity sha512-tPCPxHEaxlz8xc6rJnWpbnh+Q0OekynkpilUAI0kISgmkY6Z70gqoAD9QX+OctVbLge77964J0HVTsk/W/VPIg==
   dependencies:
-    "@date-io/core" "^1.0.1"
+    "@date-io/core" "^1.0.2"
 
 "@emotion/hash@^0.7.1":
   version "0.7.1"
@@ -3194,10 +3194,10 @@ data-urls@^1.0.0, data-urls@^1.1.0:
     whatwg-mimetype "^2.2.0"
     whatwg-url "^7.0.0"
 
-date-fns@^1.30.1:
-  version "1.30.1"
-  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.30.1.tgz#2e71bf0b119153dbb4cc4e88d9ea5acfb50dc05c"
-  integrity sha512-hBSVCvSmWC+QypYObzwGOd9wqdDpOt+0wl0KbU+R+uuZBS1jN8VsD1ss3irQDknRj5NvxiTF6oj/nDRnN/UQNw==
+date-fns@2.0.0-alpha.25:
+  version "2.0.0-alpha.25"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.0.0-alpha.25.tgz#651a5d1f59a01af6cf0371e39b2ae29df5d521ee"
+  integrity sha512-iQzJkHF0L4wah9Ae9PkvwemwFz6qmRLuNZcghmvf2t+ptLs1qXzONLiGtjmPQzL6+JpC01JjlTopY2AEy4NFAg==
 
 date-now@^0.1.4:
   version "0.1.4"

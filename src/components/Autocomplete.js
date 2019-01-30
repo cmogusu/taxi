@@ -1,5 +1,8 @@
 // @flow
 import * as React from 'react';
+import TextField from '@material-ui/core/TextField';
+import { withStyles } from '@material-ui/core/styles';
+import { camelCase } from 'lodash';
 import withGoogle from '../functions/withGoogle.js';
 
 type Props = {
@@ -7,6 +10,14 @@ type Props = {
   google: {},
   label?: string,
 };
+
+const styles = theme => ({
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+    width: 200,
+  },
+});
 
 class AutocompleteInput extends React.Component<Props> {
   static defaultProps = {
@@ -58,17 +69,14 @@ class AutocompleteInput extends React.Component<Props> {
     const { label } = this.props;
 
     return (
-      <label htmlFor="autocomplete">
-        {label}
-        <input
-          id="autocomplete"
-          ref={(element) => { this.element = element; }}
-          type="text"
-          placeholder={label}
-        />
-      </label>
+      <TextField
+        id={`autocomplete-${camelCase(label)}`}
+        inputRef={(element) => { this.element = element; }}
+        type="text"
+        label={label}
+      />
     );
   }
 }
 
-export default withGoogle(AutocompleteInput);
+export default withStyles(styles)(withGoogle(AutocompleteInput));

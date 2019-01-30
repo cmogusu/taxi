@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react';
 import withGoogle from '../functions/withGoogle.js';
-import { metersToMiles, distanceToPrice } from '../functions/functions.js';
+import { metersToMiles, distanceToPrice, secondsToMinutes } from '../functions/functions.js';
 
 type Props = {
   google: {},
@@ -36,6 +36,8 @@ class Map extends React.Component<Props, State> {
 
   directionsService = null;
 
+  directionsRenderer = null;
+
   totalDuration = 0;
 
   componentDidUpdate(prevProps) {
@@ -59,7 +61,7 @@ class Map extends React.Component<Props, State> {
 
     if (origin
       && destination
-      && (origin !== prevOrigin || destination !== prevDestination || via !== prevVia )
+      && (origin !== prevOrigin || destination !== prevDestination || via !== prevVia)
     ) {
       this.displayRoute();
     }
@@ -97,7 +99,7 @@ class Map extends React.Component<Props, State> {
     }
 
     this.directionsService.route(routeInfo, this.processResults);
-    // console.log(`would check google now for ${origin} ${destination} ${via}`);
+
     this.setState({
       isLoading: true,
     });
@@ -105,20 +107,36 @@ class Map extends React.Component<Props, State> {
 
 
   processResults = (results, status) => {
+    const { google } = this.props;
+
     if (status !== 'OK') {
       console.log('unable to get directons');
       return;
     }
 
     const totalDistance = results.routes.reduce((distance, route) => (
-      distance + route.legs.reduce((innerDistance, leg) => innerDistance + leg.distance.value)
+      distance + route.legs.reduce((innerDistance, leg) => (innerDistance + leg.distance.value), 0)
     ), 0);
 
+    const totalDuration = results.routes.reduce((duration, route) => (
+      duration + route.legs.reduce((innerDuration, leg) => (innerDuration + leg.duration.value), 0)
+    ), 0);
+
+
+    if (!this.directionsRenderer) {
+      this.directionsRenderer = new google.maps.DirectionsRenderer({
+        draggable: false,
+        map: this.map,
+      });
+
+      this.directionsRenderer.setDirections(results);
+    }
     console.log(results);
 
     this.setState({
       isLoading: false,
       totalDistance,
+      totalDuration,
     });
   };
 
@@ -153,11 +171,11 @@ class Map extends React.Component<Props, State> {
             miles
           </span>
           <span>
-            {totalDuration}
+            {secondsToMinutes(totalDuration)}
             mins
           </span>
           <span>
-            {distanceToPrice(totalDuration)}
+            {distanceToPrice(totalDuration, 2.5)}
             mins
           </span>
         </div>
